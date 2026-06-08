@@ -14,7 +14,9 @@
     "dev:admin": "npm -w @safeturn/shared run build && npm -w @safeturn/admin-dashboard run dev",
     "dev:rider": "npm -w @safeturn/shared run build && npm -w @safeturn/rider-app run dev",
     "dev:family": "npm -w @safeturn/shared run build && npm -w @safeturn/family-h5 run dev",
-    "typecheck": "npm -w @safeturn/shared run typecheck && npm -w @safeturn/server run typecheck && npm -w @safeturn/admin-dashboard run typecheck && npm -w @safeturn/rider-app run typecheck && npm -w @safeturn/family-h5 run typecheck"
+    "typecheck": "npm -w @safeturn/shared run typecheck && npm -w @safeturn/server run typecheck && npm -w @safeturn/admin-dashboard run typecheck && npm -w @safeturn/rider-app run typecheck && npm -w @safeturn/family-h5 run typecheck",
+    "android:build": "./gradlew :apps:android-rider:assembleDebug",
+    "android:install": "./gradlew :apps:android-rider:installDebug"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

@@ -7,6 +7,7 @@ SafeTurn 是智能骑行头盔演示项目，包含骑手端、家属报警 H5�
 - `apps/server`：Express + WebSocket + 可选 MQTT 桥接，提供遥测、报警、设备命令和轨迹接口。
 - `apps/admin-dashboard`：React + TailwindCSS + Lucide + Recharts 后台实时大屏。
 - `apps/rider-app`：React PWA 形态骑手端，包含首页仪表盘、灯带控制、导航联动、安全监测、历史轨迹、设置和 SOS。
+- `apps/android-rider`：原生 Android Kotlin 骑手端，包含首页仪表盘、灯带控制、长按 SOS、导航、安全监测、历史轨迹和设置页。
 - `apps/family-h5`：家属收到短信链接后打开的报警详情页。
 - `packages/shared`：前后端共享 TypeScript 类型、API 路由和 MQTT topic 契约。
 
@@ -34,6 +35,30 @@ npm run dev:rider
 npm run dev:family
 npm run typecheck
 ```
+
+## Android 骑手端
+
+本机 Android SDK 路径如果没有写入环境变量，可以临时这样构建：
+
+```bash
+ANDROID_HOME=/Users/yangdongju/Library/Android/sdk npm run android:build
+```
+
+Debug APK 输出位置：
+
+```bash
+apps/android-rider/build/outputs/apk/debug/android-rider-debug.apk
+```
+
+安装到已连接的模拟器或真机：
+
+```bash
+ANDROID_HOME=/Users/yangdongju/Library/Android/sdk npm run android:install
+```
+
+Android 模拟器访问本机 server 使用默认地址 `http://10.0.2.2:4000`。真机调试时，在 App 的“我的 -> Server 地址”里改成同一局域网内 Mac 的地址，例如 `http://192.168.5.4:4000`。
+
+当前 Android 导航页还是自绘示意地图，尚未接入真实地图 SDK。接真实导航建议下一步接高德地图 Android SDK，需要高德 Android Key，并绑定包名 `com.safeturn.rider` 和调试/发布 SHA1。
 
 ## MQTT
 
