@@ -1,0 +1,23 @@
+{
+  "name": "safeturn-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SafeTurn smart helmet rider app, family alert H5, real-time admin dashboard and server monorepo.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm -w @safeturn/shared run build && npm -w @safeturn/server run build && npm -w @safeturn/admin-dashboard run build && npm -w @safeturn/rider-app run build && npm -w @safeturn/family-h5 run build",
+    "dev": "concurrently -n shared,server,admin,rider,family -c cyan,green,blue,magenta,yellow \"npm -w @safeturn/shared run build:watch\" \"npm -w @safeturn/server run dev\" \"npm -w @safeturn/admin-dashboard run dev\" \"npm -w @safeturn/rider-app run dev\" \"npm -w @safeturn/family-h5 run dev\"",
+    "dev:server": "npm -w @safeturn/shared run build && npm -w @safeturn/server run dev",
+    "dev:admin": "npm -w @safeturn/shared run build && npm -w @safeturn/admin-dashboard run dev",
+    "dev:rider": "npm -w @safeturn/shared run build && npm -w @safeturn/rider-app run dev",
+    "dev:family": "npm -w @safeturn/shared run build && npm -w @safeturn/family-h5 run dev",
+    "typecheck": "npm -w @safeturn/shared run typecheck && npm -w @safeturn/server run typecheck && npm -w @safeturn/admin-dashboard run typecheck && npm -w @safeturn/rider-app run typecheck && npm -w @safeturn/family-h5 run typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.6.3"
+  }
+}
