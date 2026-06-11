@@ -26,6 +26,8 @@ npm run dev
 - 骑手端: `http://localhost:5174`
 - 家属 H5: `http://localhost:5175`
 
+生产环境默认后端地址已切到 ECS 公网 IP：`http://120.55.195.100:4000`。
+
 ## 常用命令
 
 ```bash
@@ -56,7 +58,30 @@ apps/android-rider/build/outputs/apk/debug/android-rider-debug.apk
 ANDROID_HOME=/Users/yangdongju/Library/Android/sdk npm run android:install
 ```
 
-Android 模拟器访问本机 server 使用默认地址 `http://10.0.2.2:4000`。真机调试时，在 App 的“我的 -> Server 地址”里改成同一局域网内 Mac 的地址，例如 `http://192.168.5.4:4000`。
+Android 默认连接生产 server：`http://120.55.195.100:4000`。如果需要临时调试本机服务，可以在 App 的“我的 -> Server 地址”里手动改成模拟器地址 `http://10.0.2.2:4000`，或同一局域网内 Mac 的地址，例如 `http://192.168.5.4:4000`。
+
+## ECS 自动部署
+
+GitHub Actions 会在 `main` 或 `master` 分支更新后自动构建并部署到 ECS `120.55.195.100`。部署后同一个 Node server 同时提供 API、WebSocket 和三个前端入口：
+
+- API: `http://120.55.195.100:4000`
+- 后台大屏: `http://120.55.195.100:4000/admin/`
+- 骑手端 Web: `http://120.55.195.100:4000/rider/`
+- 家属 H5: `http://120.55.195.100:4000/family/`
+
+ECS 首次部署前需要满足：
+
+- 已安装 Node.js 20+ 和 npm。
+- 安全组已开放 TCP `4000` 和 SSH `22`。
+- SSH 用户可以执行 `sudo systemctl`，例如 `root` 或具备免密 sudo 的 `ubuntu` 用户。
+
+GitHub 仓库需要配置 Secrets：
+
+- `ECS_SSH_PRIVATE_KEY`：能登录 ECS 的 SSH 私钥。
+- `ECS_SSH_USER`：SSH 用户名，未配置时默认 `root`。
+- `ECS_SSH_PORT`：SSH 端口，未配置时默认 `22`。
+
+部署流程定义在 `.github/workflows/deploy-ecs.yml`。它会执行 `npm ci`、`npm run typecheck`、`npm run build`，再打包产物上传到 ECS 的 `/opt/safeturn`，并通过 systemd 服务 `safeturn-server` 启动 `apps/server/dist/index.js`。
 
 当前 Android 导航页还是自绘示意地图，尚未接入真实地图 SDK。接真实导航建议下一步接高德地图 Android SDK，需要高德 Android Key，并绑定包名 `com.safeturn.rider` 和调试/发布 SHA1。
 

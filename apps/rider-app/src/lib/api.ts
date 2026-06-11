@@ -1,7 +1,13 @@
-import type { ApiEnvelope, CommandAck, Device, LightCommand, RealtimeSnapshot } from "@safeturn/shared";
+import { publicServerBaseUrl, type ApiEnvelope, type CommandAck, type Device, type LightCommand, type RealtimeSnapshot } from "@safeturn/shared";
 
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:4000";
-export const WS_BASE = API_BASE.replace(/^http/, "ws");
+const configuredApiBase = import.meta.env.VITE_API_BASE?.trim();
+
+export const API_BASE = configuredApiBase || (import.meta.env.DEV ? "" : publicServerBaseUrl);
+export const WS_BASE = configuredApiBase
+  ? configuredApiBase.replace(/^http/, "ws")
+  : import.meta.env.DEV
+    ? window.location.origin.replace(/^http/, "ws")
+    : publicServerBaseUrl.replace(/^http/, "ws");
 
 export async function fetchSnapshot() {
   const response = await fetch(`${API_BASE}/api/snapshot`);

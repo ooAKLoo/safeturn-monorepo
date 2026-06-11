@@ -1,6 +1,8 @@
-import type { AlarmRecord, ApiEnvelope, RealtimeSnapshot } from "@safeturn/shared";
+import { publicServerBaseUrl, type AlarmRecord, type ApiEnvelope, type RealtimeSnapshot } from "@safeturn/shared";
 
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:4000";
+const configuredApiBase = import.meta.env.VITE_API_BASE?.trim();
+
+export const API_BASE = configuredApiBase || (import.meta.env.DEV ? "" : publicServerBaseUrl);
 
 export async function fetchLatestAlarm(alarmId?: string) {
   if (alarmId) {

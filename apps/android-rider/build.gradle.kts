@@ -14,7 +14,7 @@ android {
         versionCode = 1
         versionName = "0.1.0"
 
-        buildConfigField("String", "DEFAULT_SERVER_BASE_URL", "\"http://10.0.2.2:4000\"")
+        buildConfigField("String", "DEFAULT_SERVER_BASE_URL", "\"http://120.55.195.100:4000\"")
     }
 
     buildFeatures {

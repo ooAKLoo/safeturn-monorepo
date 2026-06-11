@@ -339,7 +339,7 @@ class MainActivity : Activity() {
                 connectRealtime()
                 toast("Server 地址已更新")
             }, LinearLayout.LayoutParams(match, dp(48)).withTop(dp(10)))
-            body("模拟器访问本机服务用 http://10.0.2.2:4000；真机访问同一局域网 Mac 用 http://192.168.5.4:4000。")
+            body("默认连接公网 server：http://120.55.195.100:4000。调试本机服务时，模拟器可改为 http://10.0.2.2:4000；真机可改为同一局域网 Mac 地址。")
         }
     }
 

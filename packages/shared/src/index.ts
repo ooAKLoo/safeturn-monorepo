@@ -160,6 +160,8 @@ export interface DeviceConfigRequest {
   vibrationEnabled?: boolean;
 }
 
+export const publicServerBaseUrl = "http://120.55.195.100:4000";
+
 export const mqttTopics = {
   telemetry: (deviceId: string) => `helmet/${deviceId}/telemetry`,
   alarm: (deviceId: string) => `helmet/${deviceId}/alarm`,

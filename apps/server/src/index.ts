@@ -1,4 +1,6 @@
 import http from "node:http";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
 import { apiRoutes } from "@safeturn/shared";
@@ -88,6 +90,37 @@ app.post("/api/simulator/tick", (_req, res) => {
   ok(res, store.snapshot());
 });
 
+const webApps = [
+  { route: "/admin", dir: "apps/admin-dashboard/dist" },
+  { route: "/rider", dir: "apps/rider-app/dist" },
+  { route: "/family", dir: "apps/family-h5/dist" }
+];
+
+function findStaticDir(relativeDir: string) {
+  const candidates = [
+    path.resolve(process.cwd(), relativeDir),
+    path.resolve(process.cwd(), "../..", relativeDir)
+  ];
+
+  return candidates.find((candidate) => existsSync(path.join(candidate, "index.html")));
+}
+
+for (const webApp of webApps) {
+  const staticDir = findStaticDir(webApp.dir);
+
+  if (staticDir) {
+    const indexFile = path.join(staticDir, "index.html");
+    app.use(webApp.route, express.static(staticDir));
+    app.get(`${webApp.route}/*`, (_req, res) => {
+      res.sendFile(indexFile);
+    });
+  }
+}
+
+app.get("/", (_req, res) => {
+  res.redirect("/admin/");
+});
+
 app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
   res.status(400).json({
     error: "SAFE_TURN_API_ERROR",
@@ -104,5 +137,5 @@ setInterval(() => {
 }, Number(process.env.SIMULATOR_INTERVAL_MS ?? 3000));
 
 server.listen(port, () => {
-  console.log(`SafeTurn server listening on http://localhost:${port}`);
+  console.log(`SafeTurn server listening on http://0.0.0.0:${port}`);
 });

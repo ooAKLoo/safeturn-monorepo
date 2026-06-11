@@ -2,7 +2,8 @@
 
 ## 实时通道
 
-- WebSocket: `ws://localhost:4000/ws`
+- 本地 WebSocket: `ws://localhost:4000/ws`
+- 生产 WebSocket: `ws://120.55.195.100:4000/ws`
 - 服务端会推送 `snapshot`、`telemetry`、`alarm`、`command_ack` 四类消息。
 
 ## REST

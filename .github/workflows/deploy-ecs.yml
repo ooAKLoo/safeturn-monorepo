@@ -1,0 +1,60 @@
+name: Deploy to ECS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  ECS_HOST: 120.55.195.100
+  ECS_SSH_PORT: ${{ secrets.ECS_SSH_PORT || '22' }}
+  ECS_SSH_USER: ${{ secrets.ECS_SSH_USER || 'root' }}
+  DEPLOY_DIR: /opt/safeturn
+  SERVICE_NAME: safeturn-server
+  PORT: "4000"
+  VITE_API_BASE: http://120.55.195.100:4000
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Package release
+        run: bash scripts/package-release.sh safeturn-release.tgz
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.ECS_SSH_PRIVATE_KEY }}" > ~/.ssh/ecs_key
+          chmod 600 ~/.ssh/ecs_key
+          ssh-keyscan -p "$ECS_SSH_PORT" -H "$ECS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload release
+        run: |
+          scp -P "$ECS_SSH_PORT" -i ~/.ssh/ecs_key safeturn-release.tgz "$ECS_SSH_USER@$ECS_HOST:/tmp/safeturn-release.tgz"
+
+      - name: Deploy on ECS
+        run: |
+          ssh -p "$ECS_SSH_PORT" -i ~/.ssh/ecs_key "$ECS_SSH_USER@$ECS_HOST" \
+            "GITHUB_SHA='$GITHUB_SHA' DEPLOY_DIR='$DEPLOY_DIR' SERVICE_NAME='$SERVICE_NAME' PORT='$PORT' RELEASE_ARCHIVE='/tmp/safeturn-release.tgz' bash -s" \
+            < scripts/deploy-ecs.sh
